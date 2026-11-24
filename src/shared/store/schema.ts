@@ -57,6 +57,7 @@ export type StoreSchema = {
     windowBounds: Electron.Rectangle | null;
     windowMaximized: boolean;
     miniplayerWindowBounds: Electron.Rectangle | null;
+    castSession: { deviceId: string; sessionId: string; appId: string; origin: string } | null;
   };
   lastfm: {
     sessionKey: string | null;

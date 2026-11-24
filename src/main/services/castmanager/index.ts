@@ -95,10 +95,16 @@ export default class CastManager extends Service {
       throw new Error("CastManager is already initialized!");
     this._initialized = true;
 
+    const configStore = this.getDependency(ConfigStore);
     this.manager = createCastManager({
       ipcMain,
       allowOrigin: (origin) => origin === YTM_ORIGIN,
       selectDevice: (devices, request) => this.pickDevice(devices, request),
+      // Lets a restart rejoin the session it left playing, instead of leaving the app disconnected from it
+      sessionStore: {
+        get: () => configStore.get("state.castSession"),
+        set: (session) => configStore.set("state.castSession", session),
+      },
     });
 
     log.info("CastManager initialized");
