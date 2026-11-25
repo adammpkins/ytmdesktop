@@ -23,6 +23,7 @@ import {
 import AppWindowManager from "../windowmanager";
 import type { AppWindow } from "../windowmanager/appwindow";
 import ConfigStore from "../configstore";
+import StateManager from "../statemanager";
 import { getIconPath } from "../../util";
 
 declare const ALL_WINDOWS_VITE_DEV_SERVER_URL: string;
@@ -72,7 +73,7 @@ function toPickerDevice(device: CastDevice): CastPickerDevice {
  */
 export default class CastManager extends Service {
   public static override readonly dependencies: DependencyConstructor<Service>[] =
-    [AppWindowManager, ConfigStore];
+    [AppWindowManager, ConfigStore, StateManager];
 
   private _initialized = false;
   public get initialized() {
@@ -95,15 +96,15 @@ export default class CastManager extends Service {
       throw new Error("CastManager is already initialized!");
     this._initialized = true;
 
-    const configStore = this.getDependency(ConfigStore);
+    const stateManager = this.getDependency(StateManager);
     this.manager = createCastManager({
       ipcMain,
       allowOrigin: (origin) => origin === YTM_ORIGIN,
       selectDevice: (devices, request) => this.pickDevice(devices, request),
       // Lets a restart rejoin the session it left playing, instead of leaving the app disconnected from it
       sessionStore: {
-        get: () => configStore.get("state.castSession"),
-        set: (session) => configStore.set("state.castSession", session),
+        get: () => stateManager.state?.castSession ?? null,
+        set: (castSession) => stateManager.updateState({ castSession }),
       },
     });
 
