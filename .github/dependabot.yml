@@ -1,5 +1,5 @@
 # Keeps electron-cast current on the cast branch: one PR per new release, merged once CI passes.
-# Security updates for every dependency are unaffected by this file.
+# Security updates for every dependency are not affected by this file.
 version: 2
 updates:
   - package-ecosystem: npm
